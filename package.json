@@ -1,0 +1,12 @@
+{
+  "name": "ecomi-token-sale-contract",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "zeppelin-solidity": "1.8.0"
+  },
+  "scripts": {
+    "dev": "truffle develop",
+    "test": "truffle test"
+  }
+}
