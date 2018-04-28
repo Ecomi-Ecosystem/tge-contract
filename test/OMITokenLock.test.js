@@ -91,6 +91,36 @@ contract('OMITokenLock', accounts => {
     await contractBalanceShouldBe(0)
   })
 
+  it('should be pausable', async () => {
+    await mintToTokenLockAndLockTokens(beneficiary1, duration.hours(1), 100)
+
+    await tokenLock.pause({ from: owner }).should.be.fulfilled
+
+    await mintToTokenLock(100)
+    await tokenLock.lockTokens(beneficiary1, duration.hours(1), 100, {
+      from: owner,
+    }).should.be.rejected
+
+    await tokenLock.finishCrowdsale().should.be.rejected
+
+    await tokenLock.unpause({ from: owner }).should.be.fulfilled
+
+    await finishCrowdsaleAndIncreaseTimeTo(duration.hours(2))
+
+    await tokenLock.pause({ from: owner }).should.be.fulfilled
+
+    await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.rejected
+    await tokenLock.releaseAll(0, 1, { from: owner }).should.be.rejected
+
+    await tokenLock.unpause({ from: owner }).should.be.fulfilled
+
+    await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.fulfilled
+  })
+
+  it('should only allow the owner to pause', async () => {
+    await tokenLock.pause({ from: notOwner }).should.be.rejected
+  })
+
   it('should keep track of the total amount of locked token for a given address', async () => {
     await finishCrowdsaleAndIncreaseTimeTo(duration.hours(2))
 
@@ -213,7 +243,7 @@ contract('OMITokenLock', accounts => {
     await tokenLock.releaseAll(0, 1, { from: owner }).should.be.fulfilled
   })
 
-  it.only('gas consumption in a real world scenario', async () => {
+  it('gas consumption in a real world scenario', async () => {
     const totalAccounts = 10
     const chunkSize = totalAccounts / 2
 
