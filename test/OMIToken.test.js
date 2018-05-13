@@ -71,4 +71,13 @@ contract('OMITokenLock', accounts => {
     await token.pause({ from: owner }).should.be.fulfilled
     await token.mint(beneficiary1, 100, { from: owner }).should.be.fulfilled
   })
+
+  it('should be able to provide an allowance', async () => {
+    await token.mint(owner, 100, { from: owner }).should.be.fulfilled
+    await token.approve(beneficiary1, 100, { from: owner })
+    const allowance = await token.allowance(owner, beneficiary1)
+    allowance.should.be.bignumber.equal(100)
+    await token.transferFrom(owner, beneficiary2, 100, { from: beneficiary1 })
+      .should.be.fulfilled
+  })
 })
