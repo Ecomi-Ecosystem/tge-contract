@@ -15,6 +15,6 @@
     "test": "truffle test",
     "docs:mythril":
       "truffle compile && myth --truffle -o markdown > ./mythril.md",
-    "docs:solgraph": "./scripts/solgraph/generate.sh",
+    "docs:solgraph": "./scripts/solgraph/generate.sh"
   }
 }
