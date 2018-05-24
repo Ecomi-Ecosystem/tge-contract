@@ -4,97 +4,16 @@
 
 - Type: Informational
 - Contract: OMICrowdsale
-- Function name: `_function_0x34fcf437`
-- PC address: 7792
-
-### Description
-
-A reachable exception (opcode 0xfe) has been detected. This can be caused by type errors, division by zero, out-of-bounds array access, or assert violations. This is acceptable in most situations. Note however that `assert()` should only be used to check invariants. Use `require()` for regular input checking. 
-In *OMICrowdsale.json:132*
-
-```
-stages[currentStage]
-```
-
-## Exception state
-
-- Type: Informational
-- Contract: OMICrowdsale
-- Function name: `_function_0x34fcf437`
-- PC address: 7737
-
-### Description
-
-A reachable exception (opcode 0xfe) has been detected. This can be caused by type errors, division by zero, out-of-bounds array access, or assert violations. This is acceptable in most situations. Note however that `assert()` should only be used to check invariants. Use `require()` for regular input checking. 
-In *OMICrowdsale.json:131*
-
-```
-stages[currentStage]
-```
-
-## Exception state
-
-- Type: Informational
-- Contract: OMICrowdsale
-- Function name: `_function_0x45021777`
-- PC address: 2520
-
-### Description
-
-A reachable exception (opcode 0xfe) has been detected. This can be caused by type errors, division by zero, out-of-bounds array access, or assert violations. This is acceptable in most situations. Note however that `assert()` should only be used to check invariants. Use `require()` for regular input checking. 
-In *OMICrowdsale.json:43*
-
-```
-mapping(address => uint256[3]) public purchaseRecords
-```
-
-## Exception state
-
-- Type: Informational
-- Contract: OMICrowdsale
-- Function name: `_function_0x57d17805`
-- PC address: 2846
-
-### Description
-
-A reachable exception (opcode 0xfe) has been detected. This can be caused by type errors, division by zero, out-of-bounds array access, or assert violations. This is acceptable in most situations. Note however that `assert()` should only be used to check invariants. Use `require()` for regular input checking. 
-In *OMICrowdsale.json:122*
-
-```
-stages[targetStage]
-```
-
-## Exception state
-
-- Type: Informational
-- Contract: OMICrowdsale
-- Function name: `_function_0x845ddcb2`
-- PC address: 3110
-
-### Description
-
-A reachable exception (opcode 0xfe) has been detected. This can be caused by type errors, division by zero, out-of-bounds array access, or assert violations. This is acceptable in most situations. Note however that `assert()` should only be used to check invariants. Use `require()` for regular input checking. 
-In *OMICrowdsale.json:36*
-
-```
-Stage[] public stages
-```
-
-## Exception state
-
-- Type: Informational
-- Contract: OMICrowdsale
 - Function name: `_function_0x8c10671c`
-- PC address: 3483
+- PC address: 3025
 
 ### Description
 
 A reachable exception (opcode 0xfe) has been detected. This can be caused by type errors, division by zero, out-of-bounds array access, or assert violations. This is acceptable in most situations. Note however that `assert()` should only be used to check invariants. Use `require()` for regular input checking. 
-In *OMICrowdsale.json:37*
+In *OMICrowdsale.json:35*
 
 ```
-untAmount;
-  uint
+56) public purcha
 ```
 # Analysis results for OMIToken.json
 
