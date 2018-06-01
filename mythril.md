@@ -5,7 +5,7 @@
 - Type: Informational
 - Contract: OMICrowdsale
 - Function name: `_function_0x8c10671c`
-- PC address: 3025
+- PC address: 3041
 
 ### Description
 
@@ -13,7 +13,7 @@ A reachable exception (opcode 0xfe) has been detected. This can be caused by typ
 In *OMICrowdsale.json:35*
 
 ```
-56) public purcha
+ddress => uint256
 ```
 # Analysis results for OMIToken.json
 
