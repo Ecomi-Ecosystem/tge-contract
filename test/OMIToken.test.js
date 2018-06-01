@@ -17,6 +17,7 @@ contract('OMITokenLock', accounts => {
   const notOwner = accounts[1]
   const beneficiary1 = accounts[2]
   const beneficiary2 = accounts[3]
+  const tokenCap = new BigNumber(1000000000).times(1e18)
 
   beforeEach(async () => {
     token = await OMIToken.new({ from: owner })
@@ -30,7 +31,7 @@ contract('OMITokenLock', accounts => {
     symbol.should.equal('OMI')
 
     const cap = await token.cap()
-    cap.should.be.bignumber.equal(1000000000)
+    cap.should.be.bignumber.equal(tokenCap)
 
     const totalSupply = await token.totalSupply()
     totalSupply.should.be.bignumber.equal(0)
@@ -47,7 +48,7 @@ contract('OMITokenLock', accounts => {
   })
 
   it('should only allow 1,000,000,000 token to be minted', async () => {
-    await token.mint(beneficiary1, 1000000000, { from: owner }).should.be
+    await token.mint(beneficiary1, tokenCap, { from: owner }).should.be
       .fulfilled
     await token.mint(beneficiary1, 1, { from: owner }).should.be.rejected
   })

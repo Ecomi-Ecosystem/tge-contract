@@ -17,9 +17,9 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
   uint256 constant crowdsaleStartTime = 1530316800;
   uint256 constant crowdsaleFinishTime = 1538351999;
   uint256 constant crowdsaleUSDGoal = 44625000;
-  uint256 constant crowdsaleTokenGoal = 362500000;
-  uint256 constant minimumTokenPurchase = 2500;
-  uint256 constant maximumTokenPurchase = 1000000;
+  uint256 constant crowdsaleTokenGoal = 362500000*1e18;
+  uint256 constant minimumTokenPurchase = 2500*1e18;
+  uint256 constant maximumTokenPurchase = 1000000*1e18;
 
   /*
    *  Storage
@@ -41,6 +41,15 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
   event USDRaisedUpdated(uint256 newTotal);
   event CrowdsaleStarted();
   event CrowdsaleFinished();
+
+
+  /*
+   *  Modifiers
+   */
+  modifier whenNotFinalized () {
+    require(!isFinalized);
+    _;
+  }
 
   /*
    *  Public Functions
@@ -65,10 +74,12 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
   function setRate(uint256 _newRate)
     public
     onlyOwner
-    whenNotPaused
+    whenNotFinalized
     returns(bool)
   {
-    _updateRate(_newRate);
+    require(_newRate > 0);
+    rate = _newRate;
+    RateChanged(rate);
     return true;
   }
 
@@ -76,8 +87,9 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
   function setUSDRaised(uint256 _total)
     public
     onlyOwner
-    whenNotPaused
+    whenNotFinalized
   {
+    require(_total > 0);
     totalUSDRaised = _total;
     USDRaisedUpdated(_total);
   }
@@ -93,29 +105,9 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
     return purchaseRecords[_beneficiary];
   }
 
-  /// @dev Get the number of tokens sold for a given stage
-  function getTokensSold() 
-    public
-    view
-    returns (uint256) 
-  {
-    return totalTokensSold;
-  }
-
   /*
    *  Internal Functions
    */
-  /// @dev Handles updating the rate for the token
-  /// @param _newRate The pre-discount amount of wei for one token.
-  function _updateRate(uint256 _newRate)
-    internal
-  {
-    require(_newRate > 0);
-
-    rate = _newRate;
-    RateChanged(rate);
-  }
-
   /// @dev Extend parent behavior to check if current stage should close. Must call super to ensure the enforcement of the whitelist.
   /// @param _beneficiary Token purchaser
   /// @param _weiAmount Amount of wei contributed
@@ -130,8 +122,7 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
     // Crowdsale should not be finalized
     require(!isFinalized);
 
-    uint256 _tokenAmount = _weiAmount.div(rate);
-
+    uint256 _tokenAmount = _getTokenAmount(_weiAmount);
     // Beneficiary's total should be between the minimum and maximum purchase amounts
     uint256 _totalPurchased = purchaseRecords[_beneficiary].add(_tokenAmount);
     require(_totalPurchased >= minimumTokenPurchase);
@@ -142,17 +133,6 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
 
     // Must be after the start time
     require(now >= crowdsaleStartTime);
-  }
-
-  /// @dev Override to extend the way in which ether is converted to tokens.
-  /// @param _weiAmount Value in wei to be converted into tokens
-  /// @return Number of tokens that can be purchased with the specified _weiAmount
-  function _getTokenAmount(uint256 _weiAmount)
-    internal
-    view
-    returns (uint256)
-  {
-    return _weiAmount.div(rate);
   }
 
   /// @dev Overrides parent by storing balances in timelock contract instead of issuing tokens right away.
@@ -172,7 +152,7 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
   function _updatePurchasingState(address _beneficiary, uint256 _weiAmount)
     internal
   {
-    uint256 _tokenAmount = _weiAmount.div(rate);
+    uint256 _tokenAmount = _getTokenAmount(_weiAmount);
 
     // Add token amount to the purchase history
     purchaseRecords[_beneficiary] = purchaseRecords[_beneficiary].add(_tokenAmount);
@@ -198,8 +178,8 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
   /// @dev Finalizes crowdsale
   function _finalization()
     internal
+    whenNotFinalized
   {
-    require(!isFinalized);
     isFinalized = true;
     tokenLock.finishCrowdsale();
     CrowdsaleFinished();
