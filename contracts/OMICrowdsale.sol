@@ -39,6 +39,8 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
    */
   event RateChanged(uint256 newRate);
   event USDRaisedUpdated(uint256 newTotal);
+  event WhitelistAddressAdded(address newWhitelistAddress);
+  event WhitelistAddressRemoved(address removedWhitelistAddress);
   event CrowdsaleStarted();
   event CrowdsaleFinished();
 
@@ -103,6 +105,29 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
     returns(uint256)
   {
     return purchaseRecords[_beneficiary];
+  }
+
+  /// @dev Adds single address to whitelist
+  /// @param _beneficiary Address to be added to the whitelist
+  function addToWhitelist(address _beneficiary) external onlyOwner {
+    whitelist[_beneficiary] = true;
+    WhitelistAddressAdded(_beneficiary);
+  }
+
+  /// @dev Adds list of addresses to whitelist. Not overloaded due to limitations with truffle testing.
+  /// @param _beneficiaries Addresses to be added to the whitelist
+  function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
+      whitelist[_beneficiaries[i]] = true;
+      WhitelistAddressAdded(_beneficiaries[i]);
+    }
+  }
+
+  /// @dev Removes single address from whitelist.
+  /// @param _beneficiary Address to be removed to the whitelist
+  function removeFromWhitelist(address _beneficiary) external onlyOwner {
+    whitelist[_beneficiary] = false;
+    WhitelistAddressRemoved(_beneficiary);
   }
 
   /*

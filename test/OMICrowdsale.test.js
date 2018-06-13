@@ -195,6 +195,8 @@ contract('OMICrowsdale', accounts => {
       it('should be able to remove accounts', async () => {
         await crowdsale.removeFromWhitelist(whitelisted1, { from: owner })
           .should.be.fulfilled
+        isWhitelisted = await crowdsale.whitelist(whitelisted1)
+        isWhitelisted.should.be.false
       })
     })
   })
