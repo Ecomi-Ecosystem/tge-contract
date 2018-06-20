@@ -1,6 +1,6 @@
 {
   "name": "ecomi-token-sale-contract",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "private": true,
   "dependencies": {
     "bignumber.js": "^7.0.1",
@@ -13,8 +13,7 @@
   "scripts": {
     "dev": "truffle develop",
     "test": "truffle test",
-    "docs:mythril":
-      "truffle compile && myth --truffle -o markdown > ./mythril.md",
+    "docs:mythril": "truffle compile && myth --truffle -o markdown > ./mythril.md",
     "docs:solgraph": "./scripts/solgraph/generate.sh"
   }
 }
