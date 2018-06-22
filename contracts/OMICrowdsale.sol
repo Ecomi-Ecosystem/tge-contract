@@ -130,6 +130,11 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
     WhitelistAddressRemoved(_beneficiary);
   }
 
+  /// @dev Finalizes the crowdsale
+  function finalize() external onlyOwner {
+    _finalization();
+  }
+
   /*
    *  Internal Functions
    */
