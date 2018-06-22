@@ -213,7 +213,7 @@ contract OMITokenLock is Ownable, Pausable {
     require(_to <= lockIndexes.length);
     require(crowdsaleFinished);
 
-    for (uint256 i = _from; i < _to; i = i.add(1)) {
+    for (uint256 i = _from; i < _to; i++) {
       require(_release(lockIndexes[i]));
     }
     return true;
@@ -235,7 +235,7 @@ contract OMITokenLock is Ownable, Pausable {
 
     bool hasUnDueLocks = false;
 
-    for (uint256 i = 0; i < lock.locks.length; i = i.add(1)) {
+    for (uint256 i = 0; i < lock.locks.length; i++) {
       Lock memory currentLock = lock.locks[i];
       // Skip any locks which are already released or revoked
       if (currentLock.released || currentLock.revoked) {
