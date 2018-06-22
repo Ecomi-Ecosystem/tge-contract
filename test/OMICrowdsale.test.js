@@ -49,7 +49,7 @@ contract('OMICrowsdale', accounts => {
     initialRate = new BigNumber(100000)
     // initialRate = await getWEItoMOMIRate()
     token = await OMIToken.new({ from: owner })
-    tokenLock = await OMITokenLock.new(token.address, { from: owner })
+    tokenLock = await OMITokenLock.new(token.address, owner, { from: owner })
     crowdsale = await OMICrowsdale.new(
       initialRate,
       ETHWallet,
@@ -66,7 +66,7 @@ contract('OMICrowsdale', accounts => {
 
     await token.mint(ETHWallet, 500000000 * 1e18, { from: owner })
     await token.approve(tokenLock.address, 500000000 * 1e18, {
-      from: ETHWallet,
+      from: ETHWallet
     })
   }
 
@@ -122,13 +122,13 @@ contract('OMICrowsdale', accounts => {
     describe('Update USD Raised', () => {
       it('should only allow owners to update the USD raised', async () => {
         await crowdsale.setUSDRaised(new BigNumber(2000000), {
-          from: notOwner,
+          from: notOwner
         }).should.be.rejected
       })
 
       it('should store updated USD amounts', async () => {
         await crowdsale.setUSDRaised(new BigNumber(2000000), {
-          from: owner,
+          from: owner
         }).should.be.fulfilled
 
         const USDRaised = await crowdsale.totalUSDRaised()
@@ -173,13 +173,13 @@ contract('OMICrowsdale', accounts => {
 
       it('should only allow owner to add many accounts at once', async () => {
         await crowdsale.addManyToWhitelist([notWhitelisted1, notWhitelisted2], {
-          from: notOwner,
+          from: notOwner
         }).should.be.rejected
       })
 
       it('should be able to add many accounts at once', async () => {
         await crowdsale.addManyToWhitelist([notWhitelisted1, notWhitelisted2], {
-          from: owner,
+          from: owner
         }).should.be.fulfilled
         isWhitelisted = await crowdsale.whitelist(notWhitelisted1)
         isWhitelisted.should.be.true
@@ -326,7 +326,7 @@ contract('OMICrowsdale', accounts => {
         it('when contributor is different from beneficiary', async () => {
           await crowdsale.buyTokens(whitelisted2, {
             value: minimumPurchaseAmount,
-            from: whitelisted1,
+            from: whitelisted1
           }).should.be.rejected
         })
       })

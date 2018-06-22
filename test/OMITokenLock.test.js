@@ -21,7 +21,7 @@ contract('OMITokenLock', accounts => {
 
   beforeEach(async () => {
     token = await OMIToken.new({ from: owner })
-    tokenLock = await OMITokenLock.new(token.address, { from: owner })
+    tokenLock = await OMITokenLock.new(token.address, owner, { from: owner })
     await tokenLock.setAllowanceAddress(owner)
     totalGas = 0
   })

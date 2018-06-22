@@ -56,8 +56,9 @@ contract OMITokenLock is Ownable, Pausable {
    *  Public Functions
    */
   /// @dev Constructor function
-  function OMITokenLock (OMIToken _token) public {
+  function OMITokenLock (OMIToken _token, address _allowanceProvider) public {
     token = _token;
+    allowanceProvider = _allowanceProvider;
   }
 
   /// @dev Sets the crowdsale address to allow authorize locking permissions
