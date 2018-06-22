@@ -1,12 +1,7 @@
 const OMIToken = artifacts.require('OMIToken')
 const OMITokenLock = artifacts.require('OMITokenLock')
 const OMICrowsdale = artifacts.require('OMICrowdsale')
-const { ether } = require('./helpers/ether')
-const { getWEItoMOMIRate } = require('./helpers/omi')
 const { duration, increaseTimeTo } = require('./helpers/increaseTime')
-const { latestTime } = require('./helpers/latestTime')
-
-const got = require('got')
 
 const BigNumber = web3.BigNumber
 
