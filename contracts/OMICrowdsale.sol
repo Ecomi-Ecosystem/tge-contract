@@ -143,14 +143,10 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
   /// @param _weiAmount Amount of wei contributed
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount)
     internal
+    whenNotPaused
+    whenNotFinalized
    {
     super._preValidatePurchase(_beneficiary, _weiAmount);
-
-    // Crowdsale should not be paused
-    require(!paused);
-
-    // Crowdsale should not be finalized
-    require(!isFinalized);
 
     // Beneficiary's total should be between the minimum and maximum purchase amounts
     uint256 _totalPurchased = purchaseRecords[_beneficiary].add(_getTokenAmount(_weiAmount));
