@@ -1,10 +1,7 @@
 const got = require('got')
-// const BigNumber = require('bignumber.js')
-const BigNumber = web3.BigNumber
+const BigNumber = require('bignumber.js')
 
 const OMItoUSDRate = new BigNumber(0.05)
-const WEItoETHRate = new BigNumber(1e-18)
-const mOMItoOMIRate = new BigNumber(1e-18)
 
 const getETHtoUSDRate = async () => {
   const response = await got(
@@ -16,17 +13,11 @@ const getETHtoUSDRate = async () => {
   return new BigNumber(response.body.USD)
 }
 
-const getETHtoOMIRate = async () => {
+const getWEItoMOMIRate = async () => {
   const ETHtoUSDRate = await getETHtoUSDRate()
   return ETHtoUSDRate.dividedBy(OMItoUSDRate)
 }
 
-const getWEItoMOMIRate = async () => {
-  return await getETHtoOMIRate()
-}
-
 module.exports = {
-  getETHtoUSDRate,
-  getETHtoOMIRate,
   getWEItoMOMIRate
 }
