@@ -171,8 +171,7 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
     internal
   {
     // Lock beneficiary's tokens
-    uint day = 86400;
-    tokenLock.lockTokens(_beneficiary, day.mul(7), _tokenAmount);
+    tokenLock.lockTokens(_beneficiary, 1 weeks, _tokenAmount);
   }
 
   /// @dev Override for extensions that require an internal state to check for validity (current user contributions, etc.)

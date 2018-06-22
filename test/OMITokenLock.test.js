@@ -316,7 +316,7 @@ contract('OMITokenLock', accounts => {
   it('should only allow the owner to call releaseAll', async () => {
     await mintAllowAndLockTokens(beneficiary1, duration.hours(1), 1)
     await finishCrowdsaleAndIncreaseTimeTo(duration.hours(2))
-    await tokenLock.releaseAll(0, 0, { from: notOwner }).should.be.rejected
+    await tokenLock.releaseAll(0, 1, { from: notOwner }).should.be.rejected
   })
 
   it('should only allow valid index ranges for releaseAll', async () => {
