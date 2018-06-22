@@ -264,7 +264,7 @@ contract OMITokenLock is Ownable, Pausable {
       tokenLocks[_beneficiary].locks[i].released = true;
       tokenLocks[_beneficiary].tokenBalance = tokenLocks[_beneficiary].tokenBalance.sub(currentLock.amount);
       totalTokensLocked = totalTokensLocked.sub(currentLock.amount);
-      assert(token.transferFrom(allowanceProvider, msg.sender, currentLock.amount));
+      assert(token.transferFrom(allowanceProvider, _beneficiary, currentLock.amount));
     }
 
     // If there are no future locks to be released, delete the lock vault
