@@ -32,7 +32,7 @@ contract('OMICrowsdale', accounts => {
 
   const crowdsaleStartTime = 1530316800
   const crowdsaleFinishTime = 1538351999
-  const crowdsaleUSDGoal = 44625000
+  const crowdsaleUSDGoal = 22125000
   const crowdsaleTokenGoal = new BigNumber(362500000).times(1e18)
   const minimumTokenPurchase = new BigNumber(2500).times(1e18)
   const maximumTokenPurchase = new BigNumber(1000000).times(1e18)
