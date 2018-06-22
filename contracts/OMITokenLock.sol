@@ -164,8 +164,7 @@ contract OMITokenLock is Ownable, Pausable {
     require(_tokens > 0);
 
     // Token Lock must have a sufficient allowance prior to creating locks
-    uint256 tokenAllowance = token.allowance(allowanceProvider, address(this));
-    require(_tokens.add(totalTokensLocked) <= tokenAllowance);
+    require(_tokens.add(totalTokensLocked) <= token.allowance(allowanceProvider, address(this)));
 
     TokenLockVault storage lock = tokenLocks[_beneficiary];
 
@@ -214,14 +213,7 @@ contract OMITokenLock is Ownable, Pausable {
     require(crowdsaleFinished);
 
     for (uint256 i = _from; i < _to; i = i.add(1)) {
-      address _beneficiary = lockIndexes[i];
-
-      //Skip any previously removed locks
-      if (_beneficiary == 0x0) {
-        continue;
-      }
-
-      require(_release(_beneficiary));
+      require(_release(lockIndexes[i]));
     }
     return true;
   }
@@ -238,9 +230,9 @@ contract OMITokenLock is Ownable, Pausable {
   {
     TokenLockVault memory lock = tokenLocks[_beneficiary];
     require(lock.beneficiary == _beneficiary);
+    require(_beneficiary != 0x0);
 
     bool hasUnDueLocks = false;
-    bool hasReleasedToken = false;
 
     for (uint256 i = 0; i < lock.locks.length; i = i.add(1)) {
       Lock memory currentLock = lock.locks[i];
@@ -259,8 +251,7 @@ contract OMITokenLock is Ownable, Pausable {
       require(currentLock.amount <= token.allowance(allowanceProvider, address(this)));
 
       // Release Tokens
-      UnlockedTokens(msg.sender, currentLock.amount);
-      hasReleasedToken = true;
+      UnlockedTokens(_beneficiary, currentLock.amount);
       tokenLocks[_beneficiary].locks[i].released = true;
       tokenLocks[_beneficiary].tokenBalance = tokenLocks[_beneficiary].tokenBalance.sub(currentLock.amount);
       totalTokensLocked = totalTokensLocked.sub(currentLock.amount);
@@ -269,10 +260,10 @@ contract OMITokenLock is Ownable, Pausable {
 
     // If there are no future locks to be released, delete the lock vault
     if (!hasUnDueLocks) {
-      delete tokenLocks[msg.sender];
+      delete tokenLocks[_beneficiary];
       lockIndexes[lock.lockIndex] = 0x0;
     }
 
-    return hasReleasedToken;
+    return true;
   }
 }

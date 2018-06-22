@@ -218,12 +218,16 @@ contract('OMITokenLock', accounts => {
 
     const crowdsaleEndTime = await finishCrowdsale()
 
-    await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.rejected
+    await tokenLock.releaseTokens({ from: beneficiary1 })
+    let lock = await tokenLock.getLockByIndex(beneficiary1, 0)
+    lock[2].should.be.false
 
     await increaseTimeTo(crowdsaleEndTime + duration.hours(2)).should.be
       .fulfilled
 
     await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.fulfilled
+    const balance = await token.balanceOf(beneficiary1).should.be.fulfilled
+    balance.should.be.bignumber.equal(1)
   })
 
   it('should release tokens to the correct owner when calling release', async () => {
@@ -261,20 +265,37 @@ contract('OMITokenLock', accounts => {
     await mintAllowAndLockTokens(beneficiary1, duration.hours(3), 3)
     await mintAllowAndLockTokens(beneficiary1, duration.hours(6), 6)
 
-    await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.rejected
+    await tokenLock.releaseTokens({ from: beneficiary1 })
+    let lock1 = await tokenLock.getLockByIndex(beneficiary1, 0)
+    let lock2 = await tokenLock.getLockByIndex(beneficiary1, 1)
+    lock1[2].should.be.false
+    lock2[2].should.be.false
+    let balance = await token.balanceOf(beneficiary1).should.be.fulfilled
+    balance.should.be.bignumber.equal(0)
 
     await increaseTimeTo(crowdsaleEndTime + duration.hours(4)).should.be
       .fulfilled
-    await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.fulfilled
+    await tokenLock.releaseTokens({ from: beneficiary1 })
+    lock1 = await tokenLock.getLockByIndex(beneficiary1, 0)
+    lock2 = await tokenLock.getLockByIndex(beneficiary1, 1)
+    lock1[2].should.be.true
+    lock2[2].should.be.false
+    balance = await token.balanceOf(beneficiary1).should.be.fulfilled
+    balance.should.be.bignumber.equal(3)
 
-    await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.rejected
-    await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.rejected
+    await tokenLock.releaseTokens({ from: beneficiary1 })
+    await tokenLock.releaseTokens({ from: beneficiary1 })
+    lock2 = await tokenLock.getLockByIndex(beneficiary1, 1)
+    lock2[2].should.be.false
 
     await increaseTimeTo(crowdsaleEndTime + duration.hours(8)).should.be
       .fulfilled
-    await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.fulfilled
+    await tokenLock.releaseTokens({ from: beneficiary1 })
 
+    // After all locks have been released, the lock is deleted.
     await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.rejected
+    balance = await token.balanceOf(beneficiary1).should.be.fulfilled
+    balance.should.be.bignumber.equal(9)
   })
 
   it('should reject if a beneficiary has no locks', async () => {

@@ -147,9 +147,8 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
     // Crowdsale should not be finalized
     require(!isFinalized);
 
-    uint256 _tokenAmount = _getTokenAmount(_weiAmount);
     // Beneficiary's total should be between the minimum and maximum purchase amounts
-    uint256 _totalPurchased = purchaseRecords[_beneficiary].add(_tokenAmount);
+    uint256 _totalPurchased = purchaseRecords[_beneficiary].add(_getTokenAmount(_weiAmount));
     require(_totalPurchased >= minimumTokenPurchase);
     require(_totalPurchased <= maximumTokenPurchase);
 
