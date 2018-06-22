@@ -1,6 +1,7 @@
 pragma solidity ^0.4.18;
 
 import "./OMIToken.sol";
+import "./OMICrowdsale.sol";
 import "../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/zeppelin-solidity/contracts/lifecycle/Pausable.sol";
@@ -16,7 +17,7 @@ contract OMITokenLock is Ownable, Pausable {
    */
   OMIToken public token;
   address public allowanceProvider;
-  address public crowdsale;
+  OMICrowdsale public crowdsale;
   bool public crowdsaleFinished = false;
   uint256 public crowdsaleEndTime;
 
@@ -40,7 +41,7 @@ contract OMITokenLock is Ownable, Pausable {
    *  Modifiers
    */
   modifier ownerOrCrowdsale () {
-    require(msg.sender == owner || msg.sender == crowdsale);
+    require(msg.sender == owner || OMICrowdsale(msg.sender) == crowdsale);
     _;
   }
 
@@ -61,7 +62,7 @@ contract OMITokenLock is Ownable, Pausable {
 
   /// @dev Sets the crowdsale address to allow authorize locking permissions
   /// @param _crowdsale The address of the crowdsale
-  function setCrowdsaleAddress (address _crowdsale)
+  function setCrowdsaleAddress (OMICrowdsale _crowdsale)
     public
     onlyOwner
     returns (bool)
