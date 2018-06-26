@@ -2,9 +2,9 @@ pragma solidity ^0.4.24;
 
 import "./OMIToken.sol";
 import "./OMICrowdsale.sol";
-import "../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol";
-import "../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol";
-import "../node_modules/zeppelin-solidity/contracts/lifecycle/Pausable.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
 /// @title OMITokenLock
 /// @author Mikel Duffy - <mikel@ecomi.com>
@@ -16,8 +16,8 @@ contract OMITokenLock is Ownable, Pausable {
    *  Storage
    */
   OMIToken public token;
-  address public allowanceProvider;
   OMICrowdsale public crowdsale;
+  address public allowanceProvider;
   bool public crowdsaleFinished = false;
   uint256 public crowdsaleEndTime;
 
@@ -56,19 +56,32 @@ contract OMITokenLock is Ownable, Pausable {
    *  Public Functions
    */
   /// @dev Constructor function
-  function OMITokenLock (OMIToken _token, address _allowanceProvider) public {
-    token = _token;
+  function OMITokenLock (address _token, address _allowanceProvider) public {
+    token = OMIToken(_token);
+    require(token.isOMITokenContract());
+
     allowanceProvider = _allowanceProvider;
+  }
+
+  /// @dev Function to call from other contracts to ensure that this is the proper contract
+  function isOMITokenLockContract()
+    public 
+    pure 
+    returns(bool)
+  { 
+    return true; 
   }
 
   /// @dev Sets the crowdsale address to allow authorize locking permissions
   /// @param _crowdsale The address of the crowdsale
-  function setCrowdsaleAddress (OMICrowdsale _crowdsale)
+  function setCrowdsaleAddress (address _crowdsale)
     public
     onlyOwner
     returns (bool)
   {
-    crowdsale = _crowdsale;
+    crowdsale = OMICrowdsale(_crowdsale);
+    require(crowdsale.isOMICrowdsaleContract());
+
     return true;
   }
 

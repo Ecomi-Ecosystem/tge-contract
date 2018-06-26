@@ -5,7 +5,8 @@ const OMITokenLock = artifacts.require('./OMITokenLock.sol')
 module.exports = function (deployer, network, accounts) {
   deployer.then(async () => {
     const rate = new web3.BigNumber(10000)
-    const ETHWallet = process.env.ETHWALLET_ADDRESS
+    // const ETHWallet = process.env.ETHWALLET_ADDRESS
+    const ETHWallet = accounts[1]
 
     await deployer.deploy(OMIToken)
     await deployer.deploy(OMITokenLock, OMIToken.address, accounts[0])

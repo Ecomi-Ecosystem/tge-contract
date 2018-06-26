@@ -2,9 +2,9 @@ pragma solidity ^0.4.24;
 
 import "./OMIToken.sol";
 import "./OMITokenLock.sol";
-import "../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol";
-import "../node_modules/zeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
-import "../node_modules/zeppelin-solidity/contracts/lifecycle/Pausable.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
+import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
 /// @title OMICrowdsale
 /// @author Mikel Duffy - <mikel@ecomi.com>
@@ -67,8 +67,21 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
     public
   {
     token = OMIToken(_OMIToken);
+    require(token.isOMITokenContract());
+
     tokenLock = OMITokenLock(_OMITokenLock);
+    require(tokenLock.isOMITokenLockContract());
+
     rate = _startingRate;
+  }
+
+  /// @dev Function to call from other contracts to ensure that this is the proper contract
+  function isOMICrowdsaleContract()
+    public 
+    pure 
+    returns(bool)
+  { 
+    return true; 
   }
 
   /// @dev Allows the owner to set the current rate for calculating the number of tokens for a purchase.
