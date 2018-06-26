@@ -60,13 +60,6 @@ contract('OMITokenLock', accounts => {
     totalGas += result.receipt.gasUsed
   }
 
-  const releaseTokenRange = async (to, from) => {
-    const result = await tokenLock.releaseAll(to, from, {
-      from: owner
-    }).should.be.fulfilled
-    totalGas += result.receipt.gasUsed
-  }
-
   const finishCrowdsale = async () => {
     const result = await tokenLock.finishCrowdsale({
       from: owner
@@ -118,11 +111,11 @@ contract('OMITokenLock', accounts => {
     await tokenLock.pause({ from: owner }).should.be.fulfilled
 
     await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.rejected
-    await tokenLock.releaseAll(0, 1, { from: owner }).should.be.rejected
 
     await tokenLock.unpause({ from: owner }).should.be.fulfilled
 
-    await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.fulfilled
+    await tokenLock.releaseTokensByAddress(beneficiary1, { from: owner }).should
+      .be.fulfilled
   })
 
   it('should only allow the owner to pause', async () => {
@@ -244,7 +237,7 @@ contract('OMITokenLock', accounts => {
     balance.should.be.bignumber.equal(1)
   })
 
-  it('should release tokens to the correct owner when calling releaseAll', async () => {
+  it('should release tokens to the correct owner when calling releaseTokensByAddress', async () => {
     await mintAllowAndLockTokens(beneficiary1, duration.hours(1), 1)
 
     const crowdsaleEndTime = await finishCrowdsale()
@@ -252,7 +245,8 @@ contract('OMITokenLock', accounts => {
     await increaseTimeTo(crowdsaleEndTime + duration.hours(2)).should.be
       .fulfilled
 
-    await tokenLock.releaseAll(0, 1, { from: owner }).should.be.fulfilled
+    await tokenLock.releaseTokensByAddress(beneficiary1, { from: owner }).should
+      .be.fulfilled
 
     const balance = await token.balanceOf(beneficiary1).should.be.fulfilled
 
@@ -312,20 +306,11 @@ contract('OMITokenLock', accounts => {
     await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.rejected
   })
 
-  it('should only allow the owner to call releaseAll', async () => {
+  it('should only allow the owner to call releaseTokensByAddress', async () => {
     await mintAllowAndLockTokens(beneficiary1, duration.hours(1), 1)
     await finishCrowdsaleAndIncreaseTimeTo(duration.hours(2))
-    await tokenLock.releaseAll(0, 1, { from: notOwner }).should.be.rejected
-  })
-
-  it('should only allow valid index ranges for releaseAll', async () => {
-    await mintAllowAndLockTokens(beneficiary1, duration.hours(1), 1)
-    await finishCrowdsaleAndIncreaseTimeTo(duration.hours(2))
-    await tokenLock.releaseAll(-1, 0, { from: owner }).should.be.rejected
-    await tokenLock.releaseAll(1, 0, { from: owner }).should.be.rejected
-    await tokenLock.releaseAll(0, 0, { from: owner }).should.be.rejected
-    await tokenLock.releaseAll(0, 2, { from: owner }).should.be.rejected
-    await tokenLock.releaseAll(0, 1, { from: owner }).should.be.fulfilled
+    await tokenLock.releaseTokensByAddress(beneficiary1, { from: notOwner })
+      .should.be.rejected
   })
 
   xit('gas consumption in a real world scenario', async () => {

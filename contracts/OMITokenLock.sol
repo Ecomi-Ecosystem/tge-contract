@@ -214,22 +214,15 @@ contract OMITokenLock is Ownable, Pausable {
   }
 
   /// @dev Transfers tokens held by timelock to all beneficiaries within the provided range.
-  /// @param _from the start lock index
-  /// @param _to the end lock index
-  function releaseAll(uint256 _from, uint256 _to)
+  /// @param _beneficiary The user for which token locks should be released.
+  function releaseTokensByAddress(address _beneficiary)
     external
     whenNotPaused
     onlyOwner
     returns (bool)
   {
-    require(_from >= 0);
-    require(_from < _to);
-    require(_to <= lockIndexes.length);
     require(crowdsaleFinished);
-
-    for (uint256 i = _from; i < _to; i++) {
-      require(_release(lockIndexes[i]));
-    }
+    require(_release(_beneficiary));
     return true;
   }
 
