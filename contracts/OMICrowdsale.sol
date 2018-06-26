@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.24;
 
 import "./OMIToken.sol";
 import "./OMITokenLock.sol";
@@ -16,7 +16,7 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
    */
   uint256 constant crowdsaleStartTime = 1530316800;
   uint256 constant crowdsaleFinishTime = 1538351999;
-  uint256 constant crowdsaleUSDGoal = 44625000;
+  uint256 constant crowdsaleUSDGoal = 22125000;
   uint256 constant crowdsaleTokenGoal = 362500000*1e18;
   uint256 constant minimumTokenPurchase = 2500*1e18;
   uint256 constant maximumTokenPurchase = 1000000*1e18;
@@ -39,6 +39,8 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
    */
   event RateChanged(uint256 newRate);
   event USDRaisedUpdated(uint256 newTotal);
+  event WhitelistAddressAdded(address newWhitelistAddress);
+  event WhitelistAddressRemoved(address removedWhitelistAddress);
   event CrowdsaleStarted();
   event CrowdsaleFinished();
 
@@ -105,6 +107,34 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
     return purchaseRecords[_beneficiary];
   }
 
+  /// @dev Adds single address to whitelist
+  /// @param _beneficiary Address to be added to the whitelist
+  function addToWhitelist(address _beneficiary) external onlyOwner {
+    whitelist[_beneficiary] = true;
+    WhitelistAddressAdded(_beneficiary);
+  }
+
+  /// @dev Adds list of addresses to whitelist. Not overloaded due to limitations with truffle testing.
+  /// @param _beneficiaries Addresses to be added to the whitelist
+  function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
+      whitelist[_beneficiaries[i]] = true;
+      WhitelistAddressAdded(_beneficiaries[i]);
+    }
+  }
+
+  /// @dev Removes single address from whitelist.
+  /// @param _beneficiary Address to be removed to the whitelist
+  function removeFromWhitelist(address _beneficiary) external onlyOwner {
+    whitelist[_beneficiary] = false;
+    WhitelistAddressRemoved(_beneficiary);
+  }
+
+  /// @dev Finalizes the crowdsale
+  function finalize() external onlyOwner {
+    _finalization();
+  }
+
   /*
    *  Internal Functions
    */
@@ -113,18 +143,13 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
   /// @param _weiAmount Amount of wei contributed
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount)
     internal
+    whenNotPaused
+    whenNotFinalized
    {
     super._preValidatePurchase(_beneficiary, _weiAmount);
 
-    // Crowdsale should not be paused
-    require(!paused);
-
-    // Crowdsale should not be finalized
-    require(!isFinalized);
-
-    uint256 _tokenAmount = _getTokenAmount(_weiAmount);
     // Beneficiary's total should be between the minimum and maximum purchase amounts
-    uint256 _totalPurchased = purchaseRecords[_beneficiary].add(_tokenAmount);
+    uint256 _totalPurchased = purchaseRecords[_beneficiary].add(_getTokenAmount(_weiAmount));
     require(_totalPurchased >= minimumTokenPurchase);
     require(_totalPurchased <= maximumTokenPurchase);
 
@@ -142,8 +167,7 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
     internal
   {
     // Lock beneficiary's tokens
-    uint day = 86400;
-    tokenLock.lockTokens(_beneficiary, day.mul(7), _tokenAmount);
+    tokenLock.lockTokens(_beneficiary, 1 weeks, _tokenAmount);
   }
 
   /// @dev Override for extensions that require an internal state to check for validity (current user contributions, etc.)

@@ -1,6 +1,7 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.24;
 
 import "./OMIToken.sol";
+import "./OMICrowdsale.sol";
 import "../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/zeppelin-solidity/contracts/lifecycle/Pausable.sol";
@@ -16,7 +17,7 @@ contract OMITokenLock is Ownable, Pausable {
    */
   OMIToken public token;
   address public allowanceProvider;
-  address public crowdsale;
+  OMICrowdsale public crowdsale;
   bool public crowdsaleFinished = false;
   uint256 public crowdsaleEndTime;
 
@@ -40,7 +41,7 @@ contract OMITokenLock is Ownable, Pausable {
    *  Modifiers
    */
   modifier ownerOrCrowdsale () {
-    require(msg.sender == owner || msg.sender == crowdsale);
+    require(msg.sender == owner || OMICrowdsale(msg.sender) == crowdsale);
     _;
   }
 
@@ -55,13 +56,14 @@ contract OMITokenLock is Ownable, Pausable {
    *  Public Functions
    */
   /// @dev Constructor function
-  function OMITokenLock (OMIToken _token) public {
+  function OMITokenLock (OMIToken _token, address _allowanceProvider) public {
     token = _token;
+    allowanceProvider = _allowanceProvider;
   }
 
   /// @dev Sets the crowdsale address to allow authorize locking permissions
   /// @param _crowdsale The address of the crowdsale
-  function setCrowdsaleAddress (address _crowdsale)
+  function setCrowdsaleAddress (OMICrowdsale _crowdsale)
     public
     onlyOwner
     returns (bool)
@@ -164,8 +166,7 @@ contract OMITokenLock is Ownable, Pausable {
     require(_tokens > 0);
 
     // Token Lock must have a sufficient allowance prior to creating locks
-    uint256 tokenAllowance = token.allowance(allowanceProvider, address(this));
-    require(_tokens.add(totalTokensLocked) <= tokenAllowance);
+    require(_tokens.add(totalTokensLocked) <= token.allowance(allowanceProvider, address(this)));
 
     TokenLockVault storage lock = tokenLocks[_beneficiary];
 
@@ -213,15 +214,8 @@ contract OMITokenLock is Ownable, Pausable {
     require(_to <= lockIndexes.length);
     require(crowdsaleFinished);
 
-    for (uint256 i = _from; i < _to; i = i.add(1)) {
-      address _beneficiary = lockIndexes[i];
-
-      //Skip any previously removed locks
-      if (_beneficiary == 0x0) {
-        continue;
-      }
-
-      require(_release(_beneficiary));
+    for (uint256 i = _from; i < _to; i++) {
+      require(_release(lockIndexes[i]));
     }
     return true;
   }
@@ -238,11 +232,11 @@ contract OMITokenLock is Ownable, Pausable {
   {
     TokenLockVault memory lock = tokenLocks[_beneficiary];
     require(lock.beneficiary == _beneficiary);
+    require(_beneficiary != 0x0);
 
     bool hasUnDueLocks = false;
-    bool hasReleasedToken = false;
 
-    for (uint256 i = 0; i < lock.locks.length; i = i.add(1)) {
+    for (uint256 i = 0; i < lock.locks.length; i++) {
       Lock memory currentLock = lock.locks[i];
       // Skip any locks which are already released or revoked
       if (currentLock.released || currentLock.revoked) {
@@ -259,20 +253,19 @@ contract OMITokenLock is Ownable, Pausable {
       require(currentLock.amount <= token.allowance(allowanceProvider, address(this)));
 
       // Release Tokens
-      UnlockedTokens(msg.sender, currentLock.amount);
-      hasReleasedToken = true;
+      UnlockedTokens(_beneficiary, currentLock.amount);
       tokenLocks[_beneficiary].locks[i].released = true;
       tokenLocks[_beneficiary].tokenBalance = tokenLocks[_beneficiary].tokenBalance.sub(currentLock.amount);
       totalTokensLocked = totalTokensLocked.sub(currentLock.amount);
-      assert(token.transferFrom(allowanceProvider, msg.sender, currentLock.amount));
+      assert(token.transferFrom(allowanceProvider, _beneficiary, currentLock.amount));
     }
 
     // If there are no future locks to be released, delete the lock vault
     if (!hasUnDueLocks) {
-      delete tokenLocks[msg.sender];
+      delete tokenLocks[_beneficiary];
       lockIndexes[lock.lockIndex] = 0x0;
     }
 
-    return hasReleasedToken;
+    return true;
   }
 }

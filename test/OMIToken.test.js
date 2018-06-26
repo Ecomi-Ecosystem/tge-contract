@@ -1,8 +1,4 @@
 const OMIToken = artifacts.require('OMIToken')
-const OMITokenLock = artifacts.require('OMITokenLock')
-const { duration, increaseTimeTo } = require('./helpers/increaseTime')
-const { latestTime } = require('./helpers/latestTime')
-const { ether } = require('./helpers/ether')
 
 const BigNumber = web3.BigNumber
 const should = require('chai')

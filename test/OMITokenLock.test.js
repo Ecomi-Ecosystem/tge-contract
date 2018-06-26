@@ -2,7 +2,6 @@ const OMIToken = artifacts.require('OMIToken')
 const OMITokenLock = artifacts.require('OMITokenLock')
 const { duration, increaseTimeTo } = require('./helpers/increaseTime')
 const { latestTime } = require('./helpers/latestTime')
-const { ether } = require('./helpers/ether')
 
 const BigNumber = web3.BigNumber
 const should = require('chai')
@@ -21,7 +20,7 @@ contract('OMITokenLock', accounts => {
 
   beforeEach(async () => {
     token = await OMIToken.new({ from: owner })
-    tokenLock = await OMITokenLock.new(token.address, { from: owner })
+    tokenLock = await OMITokenLock.new(token.address, owner, { from: owner })
     await tokenLock.setAllowanceAddress(owner)
     totalGas = 0
   })
@@ -39,14 +38,14 @@ contract('OMITokenLock', accounts => {
   const mintAndAllow = async amount => {
     const result1 = await token.mint(owner, amount).should.be.fulfilled
     const result2 = await token.increaseApproval(tokenLock.address, amount, {
-      from: owner,
+      from: owner
     })
     totalGas += result1.receipt.gasUsed + result2.receipt.gasUsed
   }
 
   const lockTokens = async (to, duration, amount) => {
     const result = await tokenLock.lockTokens(to, duration, amount, {
-      from: owner,
+      from: owner
     }).should.be.fulfilled
     totalGas += result.receipt.gasUsed
   }
@@ -63,14 +62,14 @@ contract('OMITokenLock', accounts => {
 
   const releaseTokenRange = async (to, from) => {
     const result = await tokenLock.releaseAll(to, from, {
-      from: owner,
+      from: owner
     }).should.be.fulfilled
     totalGas += result.receipt.gasUsed
   }
 
   const finishCrowdsale = async () => {
     const result = await tokenLock.finishCrowdsale({
-      from: owner,
+      from: owner
     }).should.be.fulfilled
     totalGas += result.receipt.gasUsed
     const crowdsaleEndTime = await tokenLock.crowdsaleEndTime().should.be
@@ -107,7 +106,7 @@ contract('OMITokenLock', accounts => {
 
     await mintAndAllow(100)
     await tokenLock.lockTokens(beneficiary1, duration.hours(1), 100, {
-      from: owner,
+      from: owner
     }).should.be.rejected
 
     await tokenLock.finishCrowdsale().should.be.rejected
@@ -147,13 +146,13 @@ contract('OMITokenLock', accounts => {
 
   it('should only allow locking tokens that have been provided as an allowance to the token lock contract', async () => {
     await tokenLock.lockTokens(beneficiary1, duration.hours(1), 1, {
-      from: owner,
+      from: owner
     }).should.be.rejected
 
     await mintAllowAndLockTokens(beneficiary1, duration.hours(1), 1)
 
     await tokenLock.lockTokens(beneficiary1, duration.hours(1), 1, {
-      from: owner,
+      from: owner
     }).should.be.rejected
 
     await mintAllowAndLockTokens(beneficiary1, duration.hours(1), 1)
@@ -163,7 +162,7 @@ contract('OMITokenLock', accounts => {
     await mintAndAllow(1)
 
     await tokenLock.lockTokens(beneficiary1, duration.hours(1), 1, {
-      from: notOwner,
+      from: notOwner
     }).should.be.rejected
 
     await lockTokens(beneficiary1, duration.hours(1), 1)
@@ -173,7 +172,7 @@ contract('OMITokenLock', accounts => {
     await mintAndAllow(1)
 
     await tokenLock.lockTokens(beneficiary1, duration.hours(1), 1, {
-      from: owner,
+      from: owner
     }).should.be.fulfilled
 
     await tokenLock.revokeLockByIndex(beneficiary1, 0, { from: notOwner })
@@ -184,7 +183,7 @@ contract('OMITokenLock', accounts => {
     await mintAndAllow(1)
 
     await tokenLock.lockTokens(beneficiary1, duration.hours(1), 1, {
-      from: owner,
+      from: owner
     }).should.be.fulfilled
 
     await tokenLock.revokeLockByIndex(beneficiary1, 0, { from: owner }).should
@@ -218,12 +217,46 @@ contract('OMITokenLock', accounts => {
 
     const crowdsaleEndTime = await finishCrowdsale()
 
-    await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.rejected
+    await tokenLock.releaseTokens({ from: beneficiary1 })
+    let lock = await tokenLock.getLockByIndex(beneficiary1, 0)
+    lock[2].should.be.false
 
     await increaseTimeTo(crowdsaleEndTime + duration.hours(2)).should.be
       .fulfilled
 
     await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.fulfilled
+    const balance = await token.balanceOf(beneficiary1).should.be.fulfilled
+    balance.should.be.bignumber.equal(1)
+  })
+
+  it('should release tokens to the correct owner when calling release', async () => {
+    await mintAllowAndLockTokens(beneficiary1, duration.hours(1), 1)
+
+    const crowdsaleEndTime = await finishCrowdsale()
+
+    await increaseTimeTo(crowdsaleEndTime + duration.hours(2)).should.be
+      .fulfilled
+
+    await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.fulfilled
+
+    const balance = await token.balanceOf(beneficiary1).should.be.fulfilled
+
+    balance.should.be.bignumber.equal(1)
+  })
+
+  it('should release tokens to the correct owner when calling releaseAll', async () => {
+    await mintAllowAndLockTokens(beneficiary1, duration.hours(1), 1)
+
+    const crowdsaleEndTime = await finishCrowdsale()
+
+    await increaseTimeTo(crowdsaleEndTime + duration.hours(2)).should.be
+      .fulfilled
+
+    await tokenLock.releaseAll(0, 1, { from: owner }).should.be.fulfilled
+
+    const balance = await token.balanceOf(beneficiary1).should.be.fulfilled
+
+    balance.should.be.bignumber.equal(1)
   })
 
   it('should wait until lock duration is completed before releasing tokens', async () => {
@@ -231,20 +264,37 @@ contract('OMITokenLock', accounts => {
     await mintAllowAndLockTokens(beneficiary1, duration.hours(3), 3)
     await mintAllowAndLockTokens(beneficiary1, duration.hours(6), 6)
 
-    await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.rejected
+    await tokenLock.releaseTokens({ from: beneficiary1 })
+    let lock1 = await tokenLock.getLockByIndex(beneficiary1, 0)
+    let lock2 = await tokenLock.getLockByIndex(beneficiary1, 1)
+    lock1[2].should.be.false
+    lock2[2].should.be.false
+    let balance = await token.balanceOf(beneficiary1).should.be.fulfilled
+    balance.should.be.bignumber.equal(0)
 
     await increaseTimeTo(crowdsaleEndTime + duration.hours(4)).should.be
       .fulfilled
-    await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.fulfilled
+    await tokenLock.releaseTokens({ from: beneficiary1 })
+    lock1 = await tokenLock.getLockByIndex(beneficiary1, 0)
+    lock2 = await tokenLock.getLockByIndex(beneficiary1, 1)
+    lock1[2].should.be.true
+    lock2[2].should.be.false
+    balance = await token.balanceOf(beneficiary1).should.be.fulfilled
+    balance.should.be.bignumber.equal(3)
 
-    await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.rejected
-    await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.rejected
+    await tokenLock.releaseTokens({ from: beneficiary1 })
+    await tokenLock.releaseTokens({ from: beneficiary1 })
+    lock2 = await tokenLock.getLockByIndex(beneficiary1, 1)
+    lock2[2].should.be.false
 
     await increaseTimeTo(crowdsaleEndTime + duration.hours(8)).should.be
       .fulfilled
-    await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.fulfilled
+    await tokenLock.releaseTokens({ from: beneficiary1 })
 
+    // After all locks have been released, the lock is deleted.
     await tokenLock.releaseTokens({ from: beneficiary1 }).should.be.rejected
+    balance = await token.balanceOf(beneficiary1).should.be.fulfilled
+    balance.should.be.bignumber.equal(9)
   })
 
   it('should reject if a beneficiary has no locks', async () => {
@@ -265,7 +315,7 @@ contract('OMITokenLock', accounts => {
   it('should only allow the owner to call releaseAll', async () => {
     await mintAllowAndLockTokens(beneficiary1, duration.hours(1), 1)
     await finishCrowdsaleAndIncreaseTimeTo(duration.hours(2))
-    await tokenLock.releaseAll(0, 0, { from: notOwner }).should.be.rejected
+    await tokenLock.releaseAll(0, 1, { from: notOwner }).should.be.rejected
   })
 
   it('should only allow valid index ranges for releaseAll', async () => {
@@ -278,7 +328,7 @@ contract('OMITokenLock', accounts => {
     await tokenLock.releaseAll(0, 1, { from: owner }).should.be.fulfilled
   })
 
-  it('gas consumption in a real world scenario', async () => {
+  xit('gas consumption in a real world scenario', async () => {
     const totalAccounts = 10
     const chunkSize = totalAccounts / 2
 

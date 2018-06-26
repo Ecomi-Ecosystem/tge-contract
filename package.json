@@ -8,6 +8,7 @@
     "chai-as-promised": "^7.1.1",
     "chai-bignumber": "^2.0.2",
     "got": "^8.3.0",
+    "truffle-hdwallet-provider": "^0.0.5",
     "zeppelin-solidity": "1.8.0"
   },
   "scripts": {
