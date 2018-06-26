@@ -1,9 +1,10 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.24;
 
 import "./OMIToken.sol";
-import "../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol";
-import "../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol";
-import "../node_modules/zeppelin-solidity/contracts/lifecycle/Pausable.sol";
+import "./OMICrowdsale.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
 /// @title OMITokenLock
 /// @author Mikel Duffy - <mikel@ecomi.com>
@@ -15,8 +16,8 @@ contract OMITokenLock is Ownable, Pausable {
    *  Storage
    */
   OMIToken public token;
+  OMICrowdsale public crowdsale;
   address public allowanceProvider;
-  address public crowdsale;
   bool public crowdsaleFinished = false;
   uint256 public crowdsaleEndTime;
 
@@ -40,7 +41,7 @@ contract OMITokenLock is Ownable, Pausable {
    *  Modifiers
    */
   modifier ownerOrCrowdsale () {
-    require(msg.sender == owner || msg.sender == crowdsale);
+    require(msg.sender == owner || OMICrowdsale(msg.sender) == crowdsale);
     _;
   }
 
@@ -55,8 +56,20 @@ contract OMITokenLock is Ownable, Pausable {
    *  Public Functions
    */
   /// @dev Constructor function
-  function OMITokenLock (OMIToken _token) public {
-    token = _token;
+  function OMITokenLock (address _token, address _allowanceProvider) public {
+    token = OMIToken(_token);
+    require(token.isOMITokenContract());
+
+    allowanceProvider = _allowanceProvider;
+  }
+
+  /// @dev Function to call from other contracts to ensure that this is the proper contract
+  function isOMITokenLockContract()
+    public 
+    pure 
+    returns(bool)
+  { 
+    return true; 
   }
 
   /// @dev Sets the crowdsale address to allow authorize locking permissions
@@ -66,7 +79,9 @@ contract OMITokenLock is Ownable, Pausable {
     onlyOwner
     returns (bool)
   {
-    crowdsale = _crowdsale;
+    crowdsale = OMICrowdsale(_crowdsale);
+    require(crowdsale.isOMICrowdsaleContract());
+
     return true;
   }
 
@@ -164,8 +179,7 @@ contract OMITokenLock is Ownable, Pausable {
     require(_tokens > 0);
 
     // Token Lock must have a sufficient allowance prior to creating locks
-    uint256 tokenAllowance = token.allowance(allowanceProvider, address(this));
-    require(_tokens.add(totalTokensLocked) <= tokenAllowance);
+    require(_tokens.add(totalTokensLocked) <= token.allowance(allowanceProvider, address(this)));
 
     TokenLockVault storage lock = tokenLocks[_beneficiary];
 
@@ -200,29 +214,15 @@ contract OMITokenLock is Ownable, Pausable {
   }
 
   /// @dev Transfers tokens held by timelock to all beneficiaries within the provided range.
-  /// @param _from the start lock index
-  /// @param _to the end lock index
-  function releaseAll(uint256 _from, uint256 _to)
+  /// @param _beneficiary The user for which token locks should be released.
+  function releaseTokensByAddress(address _beneficiary)
     external
     whenNotPaused
     onlyOwner
     returns (bool)
   {
-    require(_from >= 0);
-    require(_from < _to);
-    require(_to <= lockIndexes.length);
     require(crowdsaleFinished);
-
-    for (uint256 i = _from; i < _to; i = i.add(1)) {
-      address _beneficiary = lockIndexes[i];
-
-      //Skip any previously removed locks
-      if (_beneficiary == 0x0) {
-        continue;
-      }
-
-      require(_release(_beneficiary));
-    }
+    require(_release(_beneficiary));
     return true;
   }
 
@@ -238,11 +238,11 @@ contract OMITokenLock is Ownable, Pausable {
   {
     TokenLockVault memory lock = tokenLocks[_beneficiary];
     require(lock.beneficiary == _beneficiary);
+    require(_beneficiary != 0x0);
 
     bool hasUnDueLocks = false;
-    bool hasReleasedToken = false;
 
-    for (uint256 i = 0; i < lock.locks.length; i = i.add(1)) {
+    for (uint256 i = 0; i < lock.locks.length; i++) {
       Lock memory currentLock = lock.locks[i];
       // Skip any locks which are already released or revoked
       if (currentLock.released || currentLock.revoked) {
@@ -259,20 +259,19 @@ contract OMITokenLock is Ownable, Pausable {
       require(currentLock.amount <= token.allowance(allowanceProvider, address(this)));
 
       // Release Tokens
-      UnlockedTokens(msg.sender, currentLock.amount);
-      hasReleasedToken = true;
+      UnlockedTokens(_beneficiary, currentLock.amount);
       tokenLocks[_beneficiary].locks[i].released = true;
       tokenLocks[_beneficiary].tokenBalance = tokenLocks[_beneficiary].tokenBalance.sub(currentLock.amount);
       totalTokensLocked = totalTokensLocked.sub(currentLock.amount);
-      assert(token.transferFrom(allowanceProvider, msg.sender, currentLock.amount));
+      assert(token.transferFrom(allowanceProvider, _beneficiary, currentLock.amount));
     }
 
     // If there are no future locks to be released, delete the lock vault
     if (!hasUnDueLocks) {
-      delete tokenLocks[msg.sender];
+      delete tokenLocks[_beneficiary];
       lockIndexes[lock.lockIndex] = 0x0;
     }
 
-    return hasReleasedToken;
+    return true;
   }
 }
