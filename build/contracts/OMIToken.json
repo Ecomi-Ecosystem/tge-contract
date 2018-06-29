@@ -491,14 +491,14 @@
     "absolutePath": "/Users/mikelduffy/Files/Ecomi/tge-contract/contracts/OMIToken.sol",
     "exportedSymbols": {
       "OMIToken": [
-        527
+        539
       ]
     },
-    "id": 528,
+    "id": 540,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 494,
+        "id": 506,
         "literals": [
           "solidity",
           "^",
@@ -511,10 +511,10 @@
       {
         "absolutePath": "openzeppelin-solidity/contracts/token/ERC20/CappedToken.sol",
         "file": "openzeppelin-solidity/contracts/token/ERC20/CappedToken.sol",
-        "id": 495,
+        "id": 507,
         "nodeType": "ImportDirective",
-        "scope": 528,
-        "sourceUnit": 1880,
+        "scope": 540,
+        "sourceUnit": 1892,
         "src": "26:69:2",
         "symbolAliases": [],
         "unitAlias": ""
@@ -522,10 +522,10 @@
       {
         "absolutePath": "openzeppelin-solidity/contracts/token/ERC20/PausableToken.sol",
         "file": "openzeppelin-solidity/contracts/token/ERC20/PausableToken.sol",
-        "id": 496,
+        "id": 508,
         "nodeType": "ImportDirective",
-        "scope": 528,
-        "sourceUnit": 2163,
+        "scope": 540,
+        "sourceUnit": 2175,
         "src": "96:71:2",
         "symbolAliases": [],
         "unitAlias": ""
@@ -536,17 +536,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 497,
+              "id": 509,
               "name": "CappedToken",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 1879,
+              "referencedDeclaration": 1891,
               "src": "190:11:2",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_CappedToken_$1879",
+                "typeIdentifier": "t_contract$_CappedToken_$1891",
                 "typeString": "contract CappedToken"
               }
             },
-            "id": 498,
+            "id": 510,
             "nodeType": "InheritanceSpecifier",
             "src": "190:11:2"
           },
@@ -554,57 +554,57 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 499,
+              "id": 511,
               "name": "PausableToken",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2162,
+              "referencedDeclaration": 2174,
               "src": "203:13:2",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_PausableToken_$2162",
+                "typeIdentifier": "t_contract$_PausableToken_$2174",
                 "typeString": "contract PausableToken"
               }
             },
-            "id": 500,
+            "id": 512,
             "nodeType": "InheritanceSpecifier",
             "src": "203:13:2"
           }
         ],
         "contractDependencies": [
-          1550,
-          1730,
-          1826,
-          1879,
-          1922,
-          1954,
-          2060,
-          2162,
-          2409
+          1562,
+          1742,
+          1838,
+          1891,
+          1934,
+          1966,
+          2072,
+          2174,
+          2421
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 527,
+        "id": 539,
         "linearizedBaseContracts": [
-          527,
-          2162,
-          1550,
-          1879,
-          2060,
-          1730,
-          2409,
-          1826,
-          1922,
-          1954
+          539,
+          2174,
+          1562,
+          1891,
+          2072,
+          1742,
+          2421,
+          1838,
+          1934,
+          1966
         ],
         "name": "OMIToken",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 503,
+            "id": 515,
             "name": "name",
             "nodeType": "VariableDeclaration",
-            "scope": 527,
+            "scope": 539,
             "src": "221:43:2",
             "stateVariable": true,
             "storageLocation": "default",
@@ -613,7 +613,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 501,
+              "id": 513,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "221:6:2",
@@ -625,7 +625,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "45636f6d6920546f6b656e",
-              "id": 502,
+              "id": 514,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -644,10 +644,10 @@
           },
           {
             "constant": true,
-            "id": 506,
+            "id": 518,
             "name": "symbol",
             "nodeType": "VariableDeclaration",
-            "scope": 527,
+            "scope": 539,
             "src": "268:37:2",
             "stateVariable": true,
             "storageLocation": "default",
@@ -656,7 +656,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 504,
+              "id": 516,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "268:6:2",
@@ -668,7 +668,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "4f4d49",
-              "id": 505,
+              "id": 517,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -687,10 +687,10 @@
           },
           {
             "constant": false,
-            "id": 509,
+            "id": 521,
             "name": "decimals",
             "nodeType": "VariableDeclaration",
-            "scope": 527,
+            "scope": 539,
             "src": "309:28:2",
             "stateVariable": true,
             "storageLocation": "default",
@@ -699,7 +699,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 507,
+              "id": 519,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "309:7:2",
@@ -711,7 +711,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "3138",
-              "id": 508,
+              "id": 520,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -730,13 +730,13 @@
           },
           {
             "body": {
-              "id": 517,
+              "id": 529,
               "nodeType": "Block",
               "src": "398:2:2",
               "statements": []
             },
             "documentation": null,
-            "id": 518,
+            "id": 530,
             "implemented": true,
             "isConstructor": true,
             "isDeclaredConst": false,
@@ -749,7 +749,7 @@
                       "typeIdentifier": "t_rational_1000000000000000000000000000_by_1",
                       "typeString": "int_const 1000000000000000000000000000"
                     },
-                    "id": 514,
+                    "id": 526,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": true,
@@ -757,7 +757,7 @@
                     "leftExpression": {
                       "argumentTypes": null,
                       "hexValue": "31303030303030303030",
-                      "id": 512,
+                      "id": 524,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -777,7 +777,7 @@
                     "rightExpression": {
                       "argumentTypes": null,
                       "hexValue": "31653138",
-                      "id": 513,
+                      "id": 525,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -799,17 +799,17 @@
                     }
                   }
                 ],
-                "id": 515,
+                "id": 527,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 511,
+                  "id": 523,
                   "name": "CappedToken",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 1879,
+                  "referencedDeclaration": 1891,
                   "src": "369:11:2",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_CappedToken_$1879_$",
+                    "typeIdentifier": "t_type$_t_contract$_CappedToken_$1891_$",
                     "typeString": "type(contract CappedToken)"
                   }
                 },
@@ -820,19 +820,19 @@
             "name": "OMIToken",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 510,
+              "id": 522,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "359:2:2"
             },
             "payable": false,
             "returnParameters": {
-              "id": 516,
+              "id": 528,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "398:0:2"
             },
-            "scope": 527,
+            "scope": 539,
             "src": "342:58:2",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -840,7 +840,7 @@
           },
           {
             "body": {
-              "id": 525,
+              "id": 537,
               "nodeType": "Block",
               "src": "568:24:2",
               "statements": [
@@ -848,7 +848,7 @@
                   "expression": {
                     "argumentTypes": null,
                     "hexValue": "74727565",
-                    "id": 523,
+                    "id": 535,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": true,
@@ -863,15 +863,15 @@
                     },
                     "value": "true"
                   },
-                  "functionReturnParameters": 522,
-                  "id": 524,
+                  "functionReturnParameters": 534,
+                  "id": 536,
                   "nodeType": "Return",
                   "src": "575:11:2"
                 }
               ]
             },
             "documentation": "@dev Function to call from other contracts to ensure that this is the proper contract",
-            "id": 526,
+            "id": 538,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -879,22 +879,22 @@
             "name": "isOMITokenContract",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 519,
+              "id": 531,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "523:2:2"
             },
             "payable": false,
             "returnParameters": {
-              "id": 522,
+              "id": 534,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 521,
+                  "id": 533,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 526,
+                  "scope": 538,
                   "src": "560:4:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -903,7 +903,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 520,
+                    "id": 532,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "560:4:2",
@@ -918,14 +918,14 @@
               ],
               "src": "559:6:2"
             },
-            "scope": 527,
+            "scope": 539,
             "src": "496:96:2",
             "stateMutability": "pure",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 528,
+        "scope": 540,
         "src": "169:425:2"
       }
     ],
@@ -935,14 +935,14 @@
     "absolutePath": "/Users/mikelduffy/Files/Ecomi/tge-contract/contracts/OMIToken.sol",
     "exportedSymbols": {
       "OMIToken": [
-        527
+        539
       ]
     },
-    "id": 528,
+    "id": 540,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 494,
+        "id": 506,
         "literals": [
           "solidity",
           "^",
@@ -955,10 +955,10 @@
       {
         "absolutePath": "openzeppelin-solidity/contracts/token/ERC20/CappedToken.sol",
         "file": "openzeppelin-solidity/contracts/token/ERC20/CappedToken.sol",
-        "id": 495,
+        "id": 507,
         "nodeType": "ImportDirective",
-        "scope": 528,
-        "sourceUnit": 1880,
+        "scope": 540,
+        "sourceUnit": 1892,
         "src": "26:69:2",
         "symbolAliases": [],
         "unitAlias": ""
@@ -966,10 +966,10 @@
       {
         "absolutePath": "openzeppelin-solidity/contracts/token/ERC20/PausableToken.sol",
         "file": "openzeppelin-solidity/contracts/token/ERC20/PausableToken.sol",
-        "id": 496,
+        "id": 508,
         "nodeType": "ImportDirective",
-        "scope": 528,
-        "sourceUnit": 2163,
+        "scope": 540,
+        "sourceUnit": 2175,
         "src": "96:71:2",
         "symbolAliases": [],
         "unitAlias": ""
@@ -980,17 +980,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 497,
+              "id": 509,
               "name": "CappedToken",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 1879,
+              "referencedDeclaration": 1891,
               "src": "190:11:2",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_CappedToken_$1879",
+                "typeIdentifier": "t_contract$_CappedToken_$1891",
                 "typeString": "contract CappedToken"
               }
             },
-            "id": 498,
+            "id": 510,
             "nodeType": "InheritanceSpecifier",
             "src": "190:11:2"
           },
@@ -998,57 +998,57 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 499,
+              "id": 511,
               "name": "PausableToken",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2162,
+              "referencedDeclaration": 2174,
               "src": "203:13:2",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_PausableToken_$2162",
+                "typeIdentifier": "t_contract$_PausableToken_$2174",
                 "typeString": "contract PausableToken"
               }
             },
-            "id": 500,
+            "id": 512,
             "nodeType": "InheritanceSpecifier",
             "src": "203:13:2"
           }
         ],
         "contractDependencies": [
-          1550,
-          1730,
-          1826,
-          1879,
-          1922,
-          1954,
-          2060,
-          2162,
-          2409
+          1562,
+          1742,
+          1838,
+          1891,
+          1934,
+          1966,
+          2072,
+          2174,
+          2421
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 527,
+        "id": 539,
         "linearizedBaseContracts": [
-          527,
-          2162,
-          1550,
-          1879,
-          2060,
-          1730,
-          2409,
-          1826,
-          1922,
-          1954
+          539,
+          2174,
+          1562,
+          1891,
+          2072,
+          1742,
+          2421,
+          1838,
+          1934,
+          1966
         ],
         "name": "OMIToken",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 503,
+            "id": 515,
             "name": "name",
             "nodeType": "VariableDeclaration",
-            "scope": 527,
+            "scope": 539,
             "src": "221:43:2",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1057,7 +1057,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 501,
+              "id": 513,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "221:6:2",
@@ -1069,7 +1069,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "45636f6d6920546f6b656e",
-              "id": 502,
+              "id": 514,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -1088,10 +1088,10 @@
           },
           {
             "constant": true,
-            "id": 506,
+            "id": 518,
             "name": "symbol",
             "nodeType": "VariableDeclaration",
-            "scope": 527,
+            "scope": 539,
             "src": "268:37:2",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1100,7 +1100,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 504,
+              "id": 516,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "268:6:2",
@@ -1112,7 +1112,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "4f4d49",
-              "id": 505,
+              "id": 517,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -1131,10 +1131,10 @@
           },
           {
             "constant": false,
-            "id": 509,
+            "id": 521,
             "name": "decimals",
             "nodeType": "VariableDeclaration",
-            "scope": 527,
+            "scope": 539,
             "src": "309:28:2",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1143,7 +1143,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 507,
+              "id": 519,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "309:7:2",
@@ -1155,7 +1155,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "3138",
-              "id": 508,
+              "id": 520,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -1174,13 +1174,13 @@
           },
           {
             "body": {
-              "id": 517,
+              "id": 529,
               "nodeType": "Block",
               "src": "398:2:2",
               "statements": []
             },
             "documentation": null,
-            "id": 518,
+            "id": 530,
             "implemented": true,
             "isConstructor": true,
             "isDeclaredConst": false,
@@ -1193,7 +1193,7 @@
                       "typeIdentifier": "t_rational_1000000000000000000000000000_by_1",
                       "typeString": "int_const 1000000000000000000000000000"
                     },
-                    "id": 514,
+                    "id": 526,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": true,
@@ -1201,7 +1201,7 @@
                     "leftExpression": {
                       "argumentTypes": null,
                       "hexValue": "31303030303030303030",
-                      "id": 512,
+                      "id": 524,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -1221,7 +1221,7 @@
                     "rightExpression": {
                       "argumentTypes": null,
                       "hexValue": "31653138",
-                      "id": 513,
+                      "id": 525,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -1243,17 +1243,17 @@
                     }
                   }
                 ],
-                "id": 515,
+                "id": 527,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 511,
+                  "id": 523,
                   "name": "CappedToken",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 1879,
+                  "referencedDeclaration": 1891,
                   "src": "369:11:2",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_CappedToken_$1879_$",
+                    "typeIdentifier": "t_type$_t_contract$_CappedToken_$1891_$",
                     "typeString": "type(contract CappedToken)"
                   }
                 },
@@ -1264,19 +1264,19 @@
             "name": "OMIToken",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 510,
+              "id": 522,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "359:2:2"
             },
             "payable": false,
             "returnParameters": {
-              "id": 516,
+              "id": 528,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "398:0:2"
             },
-            "scope": 527,
+            "scope": 539,
             "src": "342:58:2",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1284,7 +1284,7 @@
           },
           {
             "body": {
-              "id": 525,
+              "id": 537,
               "nodeType": "Block",
               "src": "568:24:2",
               "statements": [
@@ -1292,7 +1292,7 @@
                   "expression": {
                     "argumentTypes": null,
                     "hexValue": "74727565",
-                    "id": 523,
+                    "id": 535,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": true,
@@ -1307,15 +1307,15 @@
                     },
                     "value": "true"
                   },
-                  "functionReturnParameters": 522,
-                  "id": 524,
+                  "functionReturnParameters": 534,
+                  "id": 536,
                   "nodeType": "Return",
                   "src": "575:11:2"
                 }
               ]
             },
             "documentation": "@dev Function to call from other contracts to ensure that this is the proper contract",
-            "id": 526,
+            "id": 538,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -1323,22 +1323,22 @@
             "name": "isOMITokenContract",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 519,
+              "id": 531,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "523:2:2"
             },
             "payable": false,
             "returnParameters": {
-              "id": 522,
+              "id": 534,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 521,
+                  "id": 533,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 526,
+                  "scope": 538,
                   "src": "560:4:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1347,7 +1347,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 520,
+                    "id": 532,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "560:4:2",
@@ -1362,14 +1362,14 @@
               ],
               "src": "559:6:2"
             },
-            "scope": 527,
+            "scope": 539,
             "src": "496:96:2",
             "stateMutability": "pure",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 528,
+        "scope": 540,
         "src": "169:425:2"
       }
     ],
@@ -1380,6 +1380,6 @@
     "version": "0.4.24+commit.e67f0147.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "2.0.0",
-  "updatedAt": "2018-06-26T12:23:21.632Z"
+  "schemaVersion": "2.0.1",
+  "updatedAt": "2018-06-29T04:58:23.341Z"
 }
