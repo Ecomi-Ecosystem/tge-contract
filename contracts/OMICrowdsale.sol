@@ -19,7 +19,7 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
   uint256 constant crowdsaleUSDGoal = 22125000;
   uint256 constant crowdsaleTokenGoal = 362500000*1e18;
   uint256 constant minimumTokenPurchase = 2500*1e18;
-  uint256 constant maximumTokenPurchase = 1000000*1e18;
+  uint256 constant maximumTokenPurchase = 5000000*1e18;
 
   /*
    *  Storage
