@@ -27,7 +27,6 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
   OMIToken public token;
   OMITokenLock public tokenLock;
 
-  uint256 currentDiscountAmount;
   uint256 public totalUSDRaised;
   uint256 public totalTokensSold;
   bool public isFinalized = false;
