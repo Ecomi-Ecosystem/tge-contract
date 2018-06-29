@@ -13,11 +13,14 @@ const getETHtoUSDRate = async () => {
   return new BigNumber(response.body.USD)
 }
 
-const getWEItoMOMIRate = async () => {
-  const ETHtoUSDRate = await getETHtoUSDRate()
+const getWEItoMOMIRate = async ETHtoUSD => {
+  const ETHtoUSDRate = ETHtoUSD
+    ? new BigNumber(ETHtoUSD)
+    : await getETHtoUSDRate()
   return ETHtoUSDRate.dividedBy(OMItoUSDRate)
 }
 
 module.exports = {
+  getETHtoUSDRate,
   getWEItoMOMIRate
 }
