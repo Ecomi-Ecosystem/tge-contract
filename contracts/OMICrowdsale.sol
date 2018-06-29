@@ -84,6 +84,17 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
     return true; 
   }
 
+  /// @dev Function to check if crowdsale is open
+  function isOpen()
+    public
+    view
+    whenNotPaused
+    whenNotFinalized
+    returns(bool)
+  {
+    return now >= crowdsaleStartTime;
+  }
+
   /// @dev Allows the owner to set the current rate for calculating the number of tokens for a purchase.
   /// @dev An external cron job will fetch the ETH/USD daily average from the cryptocompare API and call this function.
   function setRate(uint256 _newRate)
