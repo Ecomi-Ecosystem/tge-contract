@@ -377,6 +377,38 @@ contract('OMICrowsdale', accounts => {
 
         await shouldRejectPurchase(whitelisted1, value)
       })
+
+      it('should only accept owner to set finish time', async () => {
+        await crowdsale.setFinishTime(crowdsaleFinishTime, { from: notOwner })
+          .should.be.rejected
+        await crowdsale.setFinishTime(crowdsaleFinishTime, { from: owner })
+          .should.be.fulfilled
+      })
+
+      it('finish time should be larger than start time', async () => {
+        await crowdsale.setFinishTime(0, { from: owner }).should.be.rejected
+      })
+
+      it('finish time is able to update', async () => {
+        const newCrowdsaleFinishTime = crowdsaleFinishTime + 10000
+        await crowdsale.setFinishTime(newCrowdsaleFinishTime, { from: owner })
+
+        const currentRate = await crowdsale.rate()
+        const value = minimumTokenPurchase.dividedBy(currentRate).toNumber()
+
+        // make purchase
+        await shouldFulfillPurchase(whitelisted1, value)
+
+        let isFinalized = await crowdsale.isFinalized()
+        isFinalized.should.be.false
+
+        // increase time to pass new finish time
+        await increaseTimeTo(newCrowdsaleFinishTime + 1)
+
+        await shouldFulfillPurchase(whitelisted1, value)
+        isFinalized = await crowdsale.isFinalized()
+        isFinalized.should.be.true
+      })
     })
   })
 })
