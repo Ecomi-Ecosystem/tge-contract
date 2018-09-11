@@ -15,7 +15,6 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
    *  Constants
    */
   uint256 constant crowdsaleStartTime = 1530273600; // Pacific/Auckland 2018-06-30 00:00:00 
-  uint256 constant crowdsaleFinishTime = 1538222400; // Pacific/Auckland 2018-09-30 00:00:00
   uint256 constant crowdsaleUSDGoal = 22125000;
   uint256 constant crowdsaleTokenGoal = 362500000*1e18;
   uint256 constant minimumTokenPurchase = 2500*1e18;
@@ -30,6 +29,7 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
   uint256 public totalUSDRaised;
   uint256 public totalTokensSold;
   bool public isFinalized = false;
+  uint256 public crowdsaleFinishTime = 1538222400; // Pacific/Auckland 2018-09-30 00:00:00
 
   mapping(address => uint256) public purchaseRecords;
 
@@ -156,6 +156,15 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
   /// @dev Finalizes the crowdsale
   function finalize() external onlyOwner {
     _finalization();
+  }
+
+  /// @dev set finish time
+  function setFinishTime(uint256 _newCrowdsaleFinishTime) external
+    whenNotFinalized
+    onlyOwner
+  {
+    require(_newCrowdsaleFinishTime > crowdsaleStartTime);
+    crowdsaleFinishTime = _newCrowdsaleFinishTime;
   }
 
   /*
