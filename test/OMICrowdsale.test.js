@@ -367,7 +367,7 @@ contract('OMICrowsdale', accounts => {
         const currentRate = await crowdsale.rate()
         const value = minimumTokenPurchase.dividedBy(currentRate).toNumber()
 
-        await increaseTimeTo(1538351999)
+        await increaseTimeTo(crowdsaleFinishTime)
 
         // Make a purchase to finalize the crowdsale
         await shouldFulfillPurchase(whitelisted1, value)
