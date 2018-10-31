@@ -10,13 +10,13 @@ module.exports = {
     },
     production: {
       provider: function () {
-        return new HDWalletProvider(mnemonic, process.env.INFURA_MAINNET)
+        return new HDWalletProvider(mnemonic, 'https://rpc.gochain.io:443')
       },
       network_id: '*'
     },
-    rinkeby: {
+    testnet: {
       provider: function () {
-        return new HDWalletProvider(mnemonic, process.env.INFURA_RINKEBY)
+        return new HDWalletProvider(mnemonic, 'https://testnet-rpc.gochain.io')
       },
       network_id: '*'
     }
