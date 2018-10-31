@@ -6,14 +6,13 @@ const should = require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-contract('OMITokenLock', accounts => {
+contract('OMIToken', accounts => {
   let token
-  let tokenLock
   const owner = accounts[0]
   const notOwner = accounts[1]
   const beneficiary1 = accounts[2]
   const beneficiary2 = accounts[3]
-  const tokenCap = new BigNumber(1000000000).times(1e18)
+  const tokenCap = new BigNumber(750000000000).times(1e18)
 
   beforeEach(async () => {
     token = await OMIToken.new({ from: owner })
@@ -43,7 +42,7 @@ contract('OMITokenLock', accounts => {
     await token.mint(beneficiary1, 100, { from: owner }).should.be.fulfilled
   })
 
-  it('should only allow 1,000,000,000 token to be minted', async () => {
+  it('should only allow 750,000,000,000 token to be minted', async () => {
     await token.mint(beneficiary1, tokenCap, { from: owner }).should.be
       .fulfilled
     await token.mint(beneficiary1, 1, { from: owner }).should.be.rejected

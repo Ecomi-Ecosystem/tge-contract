@@ -8,7 +8,7 @@ contract OMIToken is CappedToken, PausableToken {
   string public constant symbol = "OMI";
   uint256 public decimals = 18;
 
-  function OMIToken() public CappedToken(1000000000*1e18) {}
+  function OMIToken() public CappedToken(750000000000*1e18) {}
 
   /// @dev Function to call from other contracts to ensure that this is the proper contract
   function isOMITokenContract()

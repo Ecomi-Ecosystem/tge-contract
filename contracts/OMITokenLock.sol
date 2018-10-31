@@ -1,7 +1,6 @@
 pragma solidity ^0.4.24;
 
 import "./OMIToken.sol";
-import "./OMICrowdsale.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
@@ -16,13 +15,11 @@ contract OMITokenLock is Ownable, Pausable {
    *  Storage
    */
   OMIToken public token;
-  OMICrowdsale public crowdsale;
   address public allowanceProvider;
-  bool public crowdsaleFinished = false;
-  uint256 public crowdsaleEndTime;
 
   struct Lock {
     uint256 amount;
+    uint256 startTime;
     uint256 lockDuration;
     bool released;
     bool revoked;
@@ -38,19 +35,10 @@ contract OMITokenLock is Ownable, Pausable {
   uint256 public totalTokensLocked;
 
   /*
-   *  Modifiers
-   */
-  modifier ownerOrCrowdsale () {
-    require(msg.sender == owner || OMICrowdsale(msg.sender) == crowdsale);
-    _;
-  }
-
-  /*
    *  Events
    */
-  event LockedTokens(address indexed beneficiary, uint256 amount, uint256 releaseTime);
+  event LockedTokens(address indexed beneficiary, uint256 amount, uint256 startTime, uint256 lockDuration);
   event UnlockedTokens(address indexed beneficiary, uint256 amount);
-  event FinishedCrowdsale();
 
   /*
    *  Public Functions
@@ -72,19 +60,6 @@ contract OMITokenLock is Ownable, Pausable {
     return true; 
   }
 
-  /// @dev Sets the crowdsale address to allow authorize locking permissions
-  /// @param _crowdsale The address of the crowdsale
-  function setCrowdsaleAddress (address _crowdsale)
-    public
-    onlyOwner
-    returns (bool)
-  {
-    crowdsale = OMICrowdsale(_crowdsale);
-    require(crowdsale.isOMICrowdsaleContract());
-
-    return true;
-  }
-
   /// @dev Sets the token allowance provider address
   /// @param _allowanceProvider The address of the token allowance provider
   function setAllowanceAddress (address _allowanceProvider)
@@ -94,18 +69,6 @@ contract OMITokenLock is Ownable, Pausable {
   {
     allowanceProvider = _allowanceProvider;
     return true;
-  }
-
-  /// @dev Marks the crowdsale as being finished and sets the crowdsale finish date
-  function finishCrowdsale()
-    public
-    ownerOrCrowdsale
-    whenNotPaused
-  {
-    require(!crowdsaleFinished);
-    crowdsaleFinished = true;
-    crowdsaleEndTime = now;
-    FinishedCrowdsale();
   }
 
   /// @dev Gets the total amount of tokens for a given address
@@ -168,9 +131,9 @@ contract OMITokenLock is Ownable, Pausable {
   /// @param _beneficiary The address to which the tokens will be released
   /// @param _lockDuration The duration of time that must elapse after the crowdsale end date
   /// @param _tokens The amount of tokens to be locked
-  function lockTokens(address _beneficiary, uint256 _lockDuration, uint256 _tokens)
+  function lockTokens(address _beneficiary, uint256 _startTime, uint256 _lockDuration, uint256 _tokens)
     external
-    ownerOrCrowdsale
+    onlyOwner
     whenNotPaused
   {
     // Lock duration must be greater than zero seconds
@@ -191,7 +154,7 @@ contract OMITokenLock is Ownable, Pausable {
     }
 
     // Add the lock
-    lock.locks.push(Lock(_tokens, _lockDuration, false, false));
+    lock.locks.push(Lock(_tokens, _startTime, _lockDuration, false, false));
 
     // Update the total tokens for this beneficiary
     lock.tokenBalance = lock.tokenBalance.add(_tokens);
@@ -199,7 +162,7 @@ contract OMITokenLock is Ownable, Pausable {
     // Update the number of locked tokens
     totalTokensLocked = _tokens.add(totalTokensLocked);
 
-    LockedTokens(_beneficiary, _tokens, _lockDuration);
+    LockedTokens(_beneficiary, _tokens, _startTime, _lockDuration);
   }
 
   /// @dev Transfers any tokens held in a timelock vault to beneficiary if they are due for release.
@@ -208,7 +171,6 @@ contract OMITokenLock is Ownable, Pausable {
     whenNotPaused
     returns(bool)
   {
-    require(crowdsaleFinished);
     require(_release(msg.sender));
     return true;
   }
@@ -221,7 +183,6 @@ contract OMITokenLock is Ownable, Pausable {
     onlyOwner
     returns (bool)
   {
-    require(crowdsaleFinished);
     require(_release(_beneficiary));
     return true;
   }
@@ -250,12 +211,12 @@ contract OMITokenLock is Ownable, Pausable {
       }
 
       // Skip any locks that are not due for release
-      if (crowdsaleEndTime.add(currentLock.lockDuration) >= now) {
+      if (currentLock.startTime.add(currentLock.lockDuration) >= now) {
         hasUnDueLocks = true;
         continue;
       }
 
-      // The amount of tokens to transfer must be less than the number of locked tokens
+      // The total token allowance must be greater than the number of locked tokens
       require(currentLock.amount <= token.allowance(allowanceProvider, address(this)));
 
       // Release Tokens
