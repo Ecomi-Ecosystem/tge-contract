@@ -1,21 +1,29 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
-import "openzeppelin-solidity/contracts/token/ERC20/CappedToken.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/PausableToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20Detailed.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20Burnable.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20Capped.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20Pausable.sol";
 
-contract OMIToken is CappedToken, PausableToken {
-  string public constant name = "Ecomi Token";
-  string public constant symbol = "OMI";
-  uint256 public decimals = 18;
+contract OMIToken is ERC20Detailed, ERC20Burnable, ERC20Capped, ERC20Pausable {
+  using SafeERC20 for ERC20;
 
-  function OMIToken() public CappedToken(750000000000*1e18) {}
+  constructor ()
+    ERC20Detailed("OMI Token", "OMI", 18)
+    ERC20Capped(750000000000*1e18)
+    ERC20Burnable()
+    ERC20Pausable()
+    ERC20()
+    public
+  {}
 
   /// @dev Function to call from other contracts to ensure that this is the proper contract
   function isOMITokenContract()
-    public 
-    pure 
+    public
+    pure
     returns(bool)
-  { 
-    return true; 
+  {
+    return true;
   }
 }

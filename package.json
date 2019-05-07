@@ -3,18 +3,21 @@
   "version": "1.2.0",
   "private": true,
   "dependencies": {
-    "bignumber.js": "^7.0.1",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
-    "chai-bignumber": "^2.0.2",
-    "got": "^8.3.0",
-    "openzeppelin-solidity": "1.10.0",
-    "truffle-hdwallet-provider": "^0.0.5"
+    "chai-bignumber": "^3.0.0",
+    "got": "^9.6.0",
+    "openzeppelin-solidity": "2.2.0",
+    "truffle-hdwallet-provider": "^1.0.8"
   },
   "scripts": {
     "dev": "truffle develop",
     "test": "truffle test",
     "docs:mythril": "truffle compile && myth --truffle -o markdown > ./mythril.md",
     "docs:solgraph": "./scripts/solgraph/generate.sh"
+  },
+  "devDependencies": {
+    "bn-chai": "^1.0.1",
+    "openzeppelin-test-helpers": "^0.3.2"
   }
 }

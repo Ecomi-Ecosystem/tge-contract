@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 import "./OMIToken.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
@@ -38,26 +38,26 @@ contract OMITokenLock is Ownable, Pausable {
    *  Events
    */
   event LockedTokens(address indexed beneficiary, uint256 amount, uint256 startTime, uint256 lockDuration);
-  event UnlockedTokens(address indexed beneficiary, uint256 amount);
+  event ReleasedTokens(address indexed beneficiary, uint256 amount);
 
   /*
    *  Public Functions
    */
   /// @dev Constructor function
-  function OMITokenLock (address _token, address _allowanceProvider) public {
+  constructor (address _token, address _allowanceProvider) public {
     token = OMIToken(_token);
-    require(token.isOMITokenContract());
+    require(token.isOMITokenContract(), "Invalid OMI token contract address");
 
     allowanceProvider = _allowanceProvider;
   }
 
   /// @dev Function to call from other contracts to ensure that this is the proper contract
   function isOMITokenLockContract()
-    public 
-    pure 
+    public
+    pure
     returns(bool)
-  { 
-    return true; 
+  {
+    return true;
   }
 
   /// @dev Sets the token allowance provider address
@@ -99,8 +99,8 @@ contract OMITokenLock is Ownable, Pausable {
     view
     returns (uint256 amount, uint256 lockDuration, bool released, bool revoked)
   {
-    require(_lockIndex >= 0);
-    require(_lockIndex <= tokenLocks[_beneficiary].locks.length.sub(1));
+    require(_lockIndex >= 0, "Invalid address");
+    require(_lockIndex <= tokenLocks[_beneficiary].locks.length.sub(1), "No token lock records found");
 
     return (
       tokenLocks[_beneficiary].locks[_lockIndex].amount,
@@ -118,9 +118,9 @@ contract OMITokenLock is Ownable, Pausable {
     onlyOwner
     returns (bool)
   {
-    require(_lockIndex >= 0);
-    require(_lockIndex <= tokenLocks[_beneficiary].locks.length.sub(1));
-    require(!tokenLocks[_beneficiary].locks[_lockIndex].revoked);
+    require(_lockIndex >= 0, "Invalid address");
+    require(_lockIndex <= tokenLocks[_beneficiary].locks.length.sub(1), "No token lock records found");
+    require(!tokenLocks[_beneficiary].locks[_lockIndex].revoked, "Lock has already been revoked");
 
     tokenLocks[_beneficiary].locks[_lockIndex].revoked = true;
 
@@ -136,18 +136,18 @@ contract OMITokenLock is Ownable, Pausable {
     onlyOwner
     whenNotPaused
   {
-    // Lock duration must be greater than zero seconds
-    require(_lockDuration >= 0);
-    // Token amount must be greater than zero
-    require(_tokens > 0);
+    require(_lockDuration >= 0, "Lock duration must be greater than zero seconds");
+    require(_tokens > 0, "Token amount must be greater than zero");
 
-    // Token Lock must have a sufficient allowance prior to creating locks
-    require(_tokens.add(totalTokensLocked) <= token.allowance(allowanceProvider, address(this)));
+    require(
+      _tokens.add(totalTokensLocked) <= token.allowance(allowanceProvider, address(this)),
+      "Token Lock must have a sufficient allowance prior to creating locks"
+    );
 
     TokenLockVault storage lock = tokenLocks[_beneficiary];
 
     // If this is the first lock for this beneficiary, add their address to the lock indexes
-    if (lock.beneficiary == 0) {
+    if (lock.beneficiary == address(0)) {
       lock.beneficiary = _beneficiary;
       lock.lockIndex = lockIndexes.length;
       lockIndexes.push(_beneficiary);
@@ -162,7 +162,7 @@ contract OMITokenLock is Ownable, Pausable {
     // Update the number of locked tokens
     totalTokensLocked = _tokens.add(totalTokensLocked);
 
-    LockedTokens(_beneficiary, _tokens, _startTime, _lockDuration);
+    emit LockedTokens(_beneficiary, _tokens, _startTime, _lockDuration);
   }
 
   /// @dev Transfers any tokens held in a timelock vault to beneficiary if they are due for release.
@@ -171,7 +171,7 @@ contract OMITokenLock is Ownable, Pausable {
     whenNotPaused
     returns(bool)
   {
-    require(_release(msg.sender));
+    require(_release(msg.sender), "Release has failed");
     return true;
   }
 
@@ -183,7 +183,7 @@ contract OMITokenLock is Ownable, Pausable {
     onlyOwner
     returns (bool)
   {
-    require(_release(_beneficiary));
+    require(_release(_beneficiary), "Release has failed");
     return true;
   }
 
@@ -198,8 +198,8 @@ contract OMITokenLock is Ownable, Pausable {
     returns (bool)
   {
     TokenLockVault memory lock = tokenLocks[_beneficiary];
-    require(lock.beneficiary == _beneficiary);
-    require(_beneficiary != 0x0);
+    require(lock.beneficiary == _beneficiary, "The beneficiary address does not match");
+    require(_beneficiary != address(0x0), "Invalid address");
 
     bool hasUnDueLocks = false;
 
@@ -217,10 +217,10 @@ contract OMITokenLock is Ownable, Pausable {
       }
 
       // The total token allowance must be greater than the number of locked tokens
-      require(currentLock.amount <= token.allowance(allowanceProvider, address(this)));
+      require(currentLock.amount <= token.allowance(allowanceProvider, address(this)), "Lock contract has insufficient allowance");
 
       // Release Tokens
-      UnlockedTokens(_beneficiary, currentLock.amount);
+      emit ReleasedTokens(_beneficiary, currentLock.amount);
       tokenLocks[_beneficiary].locks[i].released = true;
       tokenLocks[_beneficiary].tokenBalance = tokenLocks[_beneficiary].tokenBalance.sub(currentLock.amount);
       totalTokensLocked = totalTokensLocked.sub(currentLock.amount);
@@ -230,7 +230,7 @@ contract OMITokenLock is Ownable, Pausable {
     // If there are no future locks to be released, delete the lock vault
     if (!hasUnDueLocks) {
       delete tokenLocks[_beneficiary];
-      lockIndexes[lock.lockIndex] = 0x0;
+      lockIndexes[lock.lockIndex] = address(0x0);
     }
 
     return true;
